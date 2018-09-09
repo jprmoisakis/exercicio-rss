@@ -2,8 +2,13 @@ package br.ufpe.cin.if710.rss
 
 import android.app.Activity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -13,29 +18,47 @@ import java.net.URL
 class MainActivity : Activity() {
 
     val RSS_FEED ="http://leopoldomt.com/if1001/g1brasil.xml"
+    var teste:List<ItemRSS> = emptyList()
 
-    private lateinit var conteudoRSS:TextView
+    private lateinit var conteudoRSS:RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         conteudoRSS = findViewById(R.id.conteudoRSS)
+
     }
 
     override fun onStart() {
         super.onStart()
-        Thread(Runnable{
-            try {
-                //Esse código dá pau, por fazer operação de rede na thread principal...
-                val feedXML = getRssFeed(RSS_FEED)
-                val feedList = ParserRSS.parserSimples(feedXML)
-                //ajustar para colocar a lista no Listview
-                //conteudoRSS.setText(feedXML)
+        try {
+            //Esse código dá pau, por fazer operação de rede na thread principal...
+           getRssFeedAux(RSS_FEED)
 
-            } catch (e: IOException) {
-                e.printStackTrace()
+            //ajustar para colocar a lista no Listview
+            //conteudoRSS.setText(feedXML)
+            conteudoRSS.layoutManager =LinearLayoutManager(this,LinearLayout.VERTICAL,false)
+            conteudoRSS.adapter = RssListAdapter(teste,this)
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+    }
+    //criada funcao auxiliar para fazer o uso do async
+    @Throws(IOException::class)
+    fun getRssFeedAux(feed:String){
+        //cria uma thread para pode fazer operações de rede
+        doAsync {
+            val feedXml =  getRssFeed(feed)
+            val feedList = ParserRSS.parse(feedXml)
+            //permite que conteudos da thread principal posssam ser alteradas para uma thread alternativa
+
+            uiThread {
+
+                conteudoRSS.adapter.notifyDataSetChanged()
             }
-        }).start()
+        }
     }
 
     @Throws(IOException::class)
