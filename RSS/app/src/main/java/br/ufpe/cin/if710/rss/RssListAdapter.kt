@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.itemlista.view.*
 
 //Classe adapter Lista<Itens> para Recyclerview
 
-class RssListAdapter (private val rss :List<ItemRSS>, private val context: Context) : Adapter<RssListAdapter.ViewHolder>() {
+class RssListAdapter (var rss :List<ItemRSS> = listOf(), private val context: Context) : Adapter<RssListAdapter.ViewHolder>() {
 
     //pra cada item da lista, coloca as informacoes dentro dos Textviews
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

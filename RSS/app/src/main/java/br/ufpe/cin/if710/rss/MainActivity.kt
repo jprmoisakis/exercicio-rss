@@ -2,11 +2,13 @@ package br.ufpe.cin.if710.rss
 
 import android.app.Activity
 import android.os.Bundle
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.io.ByteArrayOutputStream
@@ -18,28 +20,21 @@ import java.net.URL
 class MainActivity : Activity() {
 
     val RSS_FEED ="http://leopoldomt.com/if1001/g1brasil.xml"
-    var teste:List<ItemRSS> = emptyList()
-
-    private lateinit var conteudoRSS:RecyclerView
+    //inicia o adapter com lista vazia, para que os dados possam ser mudados posteriormente
+    private var adapter = RssListAdapter(listOf(),this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        conteudoRSS = findViewById(R.id.conteudoRSS)
+        conteudoRSS.layoutManager =LinearLayoutManager(this,LinearLayout.VERTICAL,false)
+        conteudoRSS.adapter = adapter
 
     }
 
     override fun onStart() {
         super.onStart()
         try {
-            //Esse código dá pau, por fazer operação de rede na thread principal...
            getRssFeedAux(RSS_FEED)
-
-            //ajustar para colocar a lista no Listview
-            //conteudoRSS.setText(feedXML)
-            conteudoRSS.layoutManager =LinearLayoutManager(this,LinearLayout.VERTICAL,false)
-            conteudoRSS.adapter = RssListAdapter(teste,this)
-
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -53,10 +48,10 @@ class MainActivity : Activity() {
             val feedXml =  getRssFeed(feed)
             val feedList = ParserRSS.parse(feedXml)
             //permite que conteudos da thread principal posssam ser alteradas para uma thread alternativa
-
             uiThread {
-
-                conteudoRSS.adapter.notifyDataSetChanged()
+                //modifica a lista do adapter
+                adapter.rss = feedList
+                adapter.notifyDataSetChanged()
             }
         }
     }
