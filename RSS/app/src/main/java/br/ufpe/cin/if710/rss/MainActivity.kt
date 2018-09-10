@@ -18,10 +18,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class MainActivity : Activity() {
-
-    val RSS_FEED ="http://leopoldomt.com/if1001/g1brasil.xml"
+    //carrega a partir do strings.xml
+    val RSS_FEED = getString(R.string.rssfeed)
     //inicia o adapter com lista vazia, para que os dados possam ser mudados posteriormente
-    private var adapter = RssListAdapter(listOf(),this)
+    private var adapter = RssListAdapter(emptyList(),this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
