@@ -1,6 +1,7 @@
 package br.ufpe.cin.if710.rss
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -16,25 +17,33 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import android.content.SharedPreferences
+import android.view.MenuInflater
+import android.view.Menu
+import android.view.MenuItem
 
 class MainActivity : Activity() {
     //carrega a partir do strings.xml
-    val RSS_FEED = getString(R.string.rssfeed)
+    var RSS_FEED =getString(R.string.rssfeed)
     //inicia o adapter com lista vazia, para que os dados possam ser mudados posteriormente
     private var adapter = RssListAdapter(emptyList(),this)
+
+    private lateinit var preferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         conteudoRSS.layoutManager =LinearLayoutManager(this,LinearLayout.VERTICAL,false)
         conteudoRSS.adapter = adapter
+        preferences = this.getSharedPreferences(RSS_FEED, 0)
+        RSS_FEED = preferences.getString("rssfeed",getString(R.string.rssfeed))
 
     }
 
     override fun onStart() {
         super.onStart()
         try {
-           getRssFeedAux(RSS_FEED)
+            getRssFeedAux(RSS_FEED)
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -55,6 +64,23 @@ class MainActivity : Activity() {
             }
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_action_bar, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.actions_opt -> {
+                startActivity(Intent(applicationContext, PreferencesActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
 
     @Throws(IOException::class)
     private fun getRssFeed(feed:String):String {
