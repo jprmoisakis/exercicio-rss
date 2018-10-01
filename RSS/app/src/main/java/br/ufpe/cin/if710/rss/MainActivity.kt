@@ -24,7 +24,7 @@ import android.view.MenuItem
 
 class MainActivity : Activity() {
     //carrega a partir do strings.xml
-    var RSS_FEED =getString(R.string.rssfeed)
+    var RSS_FEED =""
     //inicia o adapter com lista vazia, para que os dados possam ser mudados posteriormente
     private var adapter = RssListAdapter(emptyList(),this)
 

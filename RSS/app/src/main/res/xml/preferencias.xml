@@ -6,8 +6,8 @@
             android:key="@string/rssfeed"
             android:dialogMessage="rss"
             android:dialogTitle="Alterar"
-            android:negativeButtonText="Cancelar"
             android:positiveButtonText="Atualizar"
+            android:negativeButtonText="Cancelar"
             android:title="RSS"/>
     </PreferenceCategory>
 </PreferenceScreen>
